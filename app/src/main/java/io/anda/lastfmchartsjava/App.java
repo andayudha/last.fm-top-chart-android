@@ -17,7 +17,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        restApiManager = new RestApiManager(this);
+        restApiManager = RestApiManager.createInstance(this);
     }
 
     @Override

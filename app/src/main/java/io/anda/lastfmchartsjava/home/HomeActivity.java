@@ -23,7 +23,7 @@ import io.anda.lastfmchartsjava.model.TrackModel;
 public class HomeActivity extends AppCompatActivity implements HomeView {
 
     private HomePresenter presenter;
-//    private List<TrackModel> trackList;
+    private List<TrackModel> trackList;
     private RecyclerView mRecyclerView;
     private EndlessScrollListener scrollListener;
     private ContentAdapter adapter;
@@ -31,19 +31,12 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.N){
-//            new AlertDialog.Builder(this)
-//                    .setMessage("Your android version not supported, required Nougat or above!")
-//                    .setPositiveButton("OK", (dialogInterface, i) -> finish())
-//                    .create().show();
-//            return;
-//        }
         setContentView(R.layout.activity_main);
 
         presenter = new HomePresenter();
 
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.content_list);
+        mRecyclerView = findViewById(R.id.content_list);
 
         mRecyclerView.setHasFixedSize(true);
 
@@ -67,8 +60,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
     @Override
     public void showListItem(List<TrackModel> contentList) {
-//        Toast.makeText(this, "success load tracks", Toast.LENGTH_SHORT).show();
-//        this.trackList = contentList;
+        this.trackList = contentList;
         adapter = new ContentAdapter();
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.smoothScrollBy(0, 100);
@@ -76,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
     @Override
     public void showNewItem(List<TrackModel> contentList) {
-//        trackList.addAll(contentList)
+        trackList = contentList;
         if(adapter==null) return;
         adapter.notifyDataSetChanged();
         mRecyclerView.smoothScrollBy(0, 100);
@@ -97,7 +89,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            TrackModel track = presenter.getTrackModelList().get(position);
+            TrackModel track = trackList.get(position);
             holder.setTrack(track);
             holder.title.setText(track.getTitle());
             holder.artist.setText(track.getArtist());
@@ -109,7 +101,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
         @Override
         public int getItemCount() {
-            return presenter.getTrackModelList().size();
+            return trackList.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder{
@@ -123,15 +115,12 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
             public ViewHolder(View row) {
                 super(row);
-                title = (TextView) row.findViewById(R.id.card_title);
-                artist = (TextView) row.findViewById(R.id.card_artist);
-                img = (ImageView) row.findViewById(R.id.card_image);
-                row.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(selected.getUrl()));
-                        startActivity(intent);
-                    }
+                title = row.findViewById(R.id.card_title);
+                artist = row.findViewById(R.id.card_artist);
+                img = row.findViewById(R.id.card_image);
+                row.setOnClickListener(view -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(selected.getUrl()));
+                    startActivity(intent);
                 });
             }
         }

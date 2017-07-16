@@ -12,7 +12,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Subscription;
 
 /**
  * Created by anda on 7/15/2017.
@@ -30,7 +29,7 @@ public class RestApiManager {
 
     private static RestApiManager instance = null;
 
-    public RestApiManager(Context context) {
+    private RestApiManager(Context context) {
         this.mContext = context;
         retrofit = new Retrofit.Builder()
                 .client(buildOkHttpsClient())
