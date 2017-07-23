@@ -2,14 +2,20 @@ package io.anda.lastfmchartsjava.home;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,13 +26,17 @@ import java.util.List;
 import io.anda.lastfmchartsjava.R;
 import io.anda.lastfmchartsjava.model.TrackModel;
 
-public class HomeActivity extends AppCompatActivity implements HomeView {
+public class HomeActivity extends AppCompatActivity implements HomeView, AdapterView.OnItemSelectedListener {
 
     private HomePresenter presenter;
+
     private List<TrackModel> trackList;
+    private String[] countryArray;
+
     private RecyclerView mRecyclerView;
     private EndlessScrollListener scrollListener;
     private ContentAdapter adapter;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +59,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
         scrollListener = new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                presenter.loadMoreTrackList(page+1);
+               int selected = spinner.getSelectedItemPosition();
+                presenter.loadMoreTrackList(page+1, getCountryCode(selected));
             }
         };
         mRecyclerView.addOnScrollListener(scrollListener);
@@ -77,6 +88,26 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     @Override
     public void loadError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+        String countryCode = getCountryCode(position);
+        if(trackList!=null){
+            trackList.clear();
+            adapter.notifyDataSetChanged();
+        }
+        presenter.loadTrackList(countryCode);
+    }
+
+    private String getCountryCode(int position) {
+        String name = getResources().getStringArray(R.array.country_list)[position];
+        return name.toLowerCase();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
     private class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder>{
@@ -132,5 +163,21 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     protected void onStop() {
         super.onStop();
         presenter.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        MenuItem item = menu.findItem(R.id.spinner);
+        spinner = (Spinner) MenuItemCompat.getActionView(item);
+        if(spinner==null) return false;
+        countryArray = getResources().getStringArray(R.array.country_list);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this,
+                R.layout.item_spinner,
+                R.id.country_text,
+                countryArray);
+        spinner.setAdapter(arrayAdapter);
+        spinner.setOnItemSelectedListener(this);
+        return true;
     }
 }

@@ -1,4 +1,13 @@
 <resources>
-    <string name="app_name">last.fm Top Chart - Japan</string>
+    <string name="app_name">last.fm Top Chart</string>
     <string name="api_key">98f9938442fc3ad2bc656b014686ffdf</string>
+    <string-array name="country_list">
+        <item>Japan</item>
+        <item>Indonesia</item>
+        <item>Australia</item>
+        <item>Mexico</item>
+        <item>China</item>
+        <item>Canada</item>
+        <item>Brazil</item>
+    </string-array>
 </resources>

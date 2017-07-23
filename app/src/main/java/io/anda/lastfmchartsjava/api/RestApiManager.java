@@ -53,10 +53,10 @@ public class RestApiManager {
     }
 
 
-    public Observable<Response<TrackResponse>> getTopChartCountryResponseObservable(int page, int limit){
+    public Observable<Response<TrackResponse>> getTopChartCountryResponseObservable(int page, int limit, String country){
         return  restService.getTopChartCountryResponse(
                 mContext.getString(R.string.api_key),
-                COUNTRY_NAME,
+                country,
                 String.valueOf(page),
                 String.valueOf(limit)
         );

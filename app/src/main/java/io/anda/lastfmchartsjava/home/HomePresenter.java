@@ -28,7 +28,7 @@ public class HomePresenter {
     private RestApiManager restApiManager;
     private HomeView homeView;
     private List<TrackModel> trackModelList;
-    private Subscription loadTrackSubscription, loadMoreTrackubscription;
+    private Subscription loadTrackSubscription, loadMoreTrackSubscription;
 
     public HomePresenter() {
         restApiManager = App.getInstance().getRestApiManager();
@@ -37,11 +37,11 @@ public class HomePresenter {
 
     public void initView(HomeView view){
         this.homeView = view;
-        loadTrackList();
     }
 
-    public void loadTrackList(){
-        loadTrackSubscription = restApiManager.getTopChartCountryResponseObservable(1, LIMIT)
+    public void loadTrackList(String country){
+        trackModelList.clear();
+        loadTrackSubscription = restApiManager.getTopChartCountryResponseObservable(1, LIMIT, country)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Response<TrackResponse>>() {
@@ -82,8 +82,8 @@ public class HomePresenter {
                 });
     }
 
-    public void loadMoreTrackList(int page){
-        loadMoreTrackubscription = restApiManager.getTopChartCountryResponseObservable(page, LIMIT)
+    public void loadMoreTrackList(int page, String country){
+        loadMoreTrackSubscription = restApiManager.getTopChartCountryResponseObservable(page, LIMIT, country)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Response<TrackResponse>>() {
@@ -156,6 +156,6 @@ public class HomePresenter {
 
     void onStop(){
         if(loadTrackSubscription!=null && !loadTrackSubscription.isUnsubscribed()) loadTrackSubscription.unsubscribe();
-        if(loadMoreTrackubscription!=null && !loadMoreTrackubscription.isUnsubscribed()) loadMoreTrackubscription.unsubscribe();
+        if(loadMoreTrackSubscription !=null && !loadMoreTrackSubscription.isUnsubscribed()) loadMoreTrackSubscription.unsubscribe();
     }
 }
