@@ -93,7 +93,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Adapter
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
         String countryCode = getCountryCode(position);
-        if(trackList!=null){
+        if(trackList!=null && adapter!=null){
             trackList.clear();
             adapter.notifyDataSetChanged();
         }
