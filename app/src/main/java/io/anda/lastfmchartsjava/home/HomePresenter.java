@@ -132,8 +132,8 @@ public class HomePresenter {
                         track.getName(),
                         track.getArtist().getName(),
                         track.getUrl(),
-                        track.getImage()[2].getText()
-                )).distinct()
+                        track.getImage()[2].getText(),
+                        track.getArtist().getUrl())).distinct()
                 .collect(Collectors.toList());
     }
 
@@ -144,7 +144,8 @@ public class HomePresenter {
                     track.getName(),
                     track.getArtist().getName(),
                     track.getUrl(),
-                    track.getImage()[2].getText());
+                    track.getImage()[2].getText(),
+                    track.getArtist().getUrl());
             trackModelList.add(trackModel);
         }
         return trackModelList;

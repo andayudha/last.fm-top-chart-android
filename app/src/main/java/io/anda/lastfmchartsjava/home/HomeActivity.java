@@ -153,6 +153,10 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Adapter
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(selected.getUrl()));
                     startActivity(intent);
                 });
+                artist.setOnClickListener(view -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(selected.getArtistUrl()));
+                    startActivity(intent);
+                });
             }
         }
 

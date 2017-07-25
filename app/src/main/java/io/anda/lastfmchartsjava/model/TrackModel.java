@@ -9,13 +9,15 @@ public class TrackModel {
     private String artist;
     private String url;
     private String imgUrl;
+    private String artistUrl;
 
-    public TrackModel(String title, String artist, String url, String imgUrl) {
+    public TrackModel(String title, String artist, String url, String imgUrl, String artistUrl) {
 
         this.title = title;
         this.artist = artist;
         this.url = url;
         this.imgUrl = imgUrl;
+        this.artistUrl = artistUrl;
     }
 
     public String getTitle() {
@@ -32,6 +34,10 @@ public class TrackModel {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getArtistUrl() {
+        return artistUrl;
     }
 
     @Override
