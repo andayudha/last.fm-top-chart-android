@@ -16,7 +16,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         restApiManager = new RestApiManager(this);
-        restApiManager.initRestService();
     }
 
     @Override

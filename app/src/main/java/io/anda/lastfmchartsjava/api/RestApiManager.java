@@ -40,25 +40,6 @@ public class RestApiManager {
         restService = retrofit.create(RestService.class);
     }
 
-    public void initRestService(){
-        retrofit = new Retrofit.Builder()
-                .client(buildOkHttpsClient())
-                .baseUrl(BASE_URL)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        restService = retrofit.create(RestService.class);
-    }
-
-    public void setRetrofit(Retrofit retrofit) {
-        this.retrofit = retrofit;
-    }
-
-    public void setRestService(RestService restService) {
-        this.restService = restService;
-    }
-
     private static OkHttpClient buildOkHttpsClient() {
         return new OkHttpClient.Builder()
                 .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
