@@ -60,7 +60,7 @@ public class HomePresenter {
                             }
                         }else{
                             int status = trackResponseResponse.code();
-                            homeView.loadError("load failed : "+status);
+                            homeView.loadError(""+status);
                         }
                     }
 

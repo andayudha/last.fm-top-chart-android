@@ -2,6 +2,7 @@ package io.anda.lastfmchartsjava;
 
 import android.content.Context;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,9 @@ import io.anda.lastfmchartsjava.api.RestApiManager;
 import io.anda.lastfmchartsjava.api.RestService;
 import io.anda.lastfmchartsjava.home.HomePresenter;
 import io.anda.lastfmchartsjava.home.HomeView;
+import io.anda.lastfmchartsjava.model.TrackResponse;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import rx.Scheduler;
 import rx.Single;
 import rx.android.plugins.RxAndroidPlugins;
@@ -60,6 +64,16 @@ public class ExampleUnitTest {
         verify(homeView, after(AFTER_MILLIS)).loadError(anyString());
     }
 
+    @Test
+    public void testResponseFailed() throws Exception{
+        String errorCode = "401";
+        Response<TrackResponse> dummyResponse = Response.error(Integer.parseInt(errorCode), mock(ResponseBody.class));
+        when(restApiManager.getTopChartCountryResponseSingle(anyInt(), anyInt(), anyString()))
+                .thenReturn(Single.just(dummyResponse));
+        homePresenter.loadTrackList("japan");
+        verify(homeView, after(AFTER_MILLIS)).loadError(errorCode);
+    }
+
     private void setupRxSchedulers() {
         // Override RxJava schedulers
         RxJavaHooks.setOnIOScheduler(new Func1<Scheduler, Scheduler>() {
@@ -93,7 +107,11 @@ public class ExampleUnitTest {
         });
     }
 
-
+    @After
+    public void tearDown() throws Exception {
+        RxJavaHooks.reset();
+        RxAndroidPlugins.getInstance().reset();
+    }
 
 
 }
