@@ -23,6 +23,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import io.anda.lastfmchartsjava.App;
 import io.anda.lastfmchartsjava.R;
 import io.anda.lastfmchartsjava.model.TrackModel;
 
@@ -42,8 +43,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Adapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        presenter = new HomePresenter();
+        App application = (App) getApplication();
+        presenter = new HomePresenter(application.getRestApiManager());
 
 
         mRecyclerView = findViewById(R.id.content_list);

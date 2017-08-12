@@ -7,19 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.anda.lastfmchartsjava.App;
 import io.anda.lastfmchartsjava.model.TrackModel;
 import io.anda.lastfmchartsjava.model.TrackResponse;
 import io.anda.lastfmchartsjava.api.RestApiManager;
 import retrofit2.Response;
+import rx.SingleSubscriber;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-/**
- * Created by anda on 7/15/2017.
- */
 
 public class HomePresenter {
 
@@ -30,9 +26,8 @@ public class HomePresenter {
     private List<TrackModel> trackModelList;
     private Subscription loadTrackSubscription, loadMoreTrackSubscription;
 
-    public HomePresenter() {
-        restApiManager = App.getInstance().getRestApiManager();
-        trackModelList = new ArrayList<>();
+    public HomePresenter(RestApiManager restApiManager) {
+        this.restApiManager = restApiManager;
     }
 
     public void initView(HomeView view){
@@ -40,24 +35,13 @@ public class HomePresenter {
     }
 
     public void loadTrackList(String country){
-        trackModelList.clear();
-        loadTrackSubscription = restApiManager.getTopChartCountryResponseObservable(1, LIMIT, country)
+        trackModelList = new ArrayList<>();
+        loadTrackSubscription = restApiManager.getTopChartCountryResponseSingle(1, LIMIT, country)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Response<TrackResponse>>() {
+                .subscribe(new SingleSubscriber<Response<TrackResponse>>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        homeView.loadError("Load error : "+e.getMessage());
-                    }
-
-
-                    @Override
-                    public void onNext(Response<TrackResponse> trackResponseResponse) {
+                    public void onSuccess(Response<TrackResponse> trackResponseResponse) {
                         if(trackResponseResponse.isSuccessful()){
                             TrackResponse trackResponse = trackResponseResponse.body();
                             List<TrackModel> trackModels;
@@ -79,27 +63,22 @@ public class HomePresenter {
                             homeView.loadError("load failed : "+status);
                         }
                     }
-                });
-    }
-
-    public void loadMoreTrackList(int page, String country){
-        loadMoreTrackSubscription = restApiManager.getTopChartCountryResponseObservable(page, LIMIT, country)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Response<TrackResponse>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
 
                     @Override
                     public void onError(Throwable e) {
                         homeView.loadError("Load error : "+e.getMessage());
                     }
+                });
 
+    }
 
+    public void loadMoreTrackList(int page, String country){
+        loadMoreTrackSubscription = restApiManager.getTopChartCountryResponseSingle(page, LIMIT, country)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleSubscriber<Response<TrackResponse>>() {
                     @Override
-                    public void onNext(Response<TrackResponse> trackResponseResponse) {
+                    public void onSuccess(Response<TrackResponse> trackResponseResponse) {
                         if(trackResponseResponse.isSuccessful()){
                             TrackResponse trackResponse = trackResponseResponse.body();
                             List<TrackModel> trackModels;
@@ -121,6 +100,11 @@ public class HomePresenter {
                             int status = trackResponseResponse.code();
                             homeView.loadError("load failed : "+status);
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        homeView.loadError("Load error : "+e.getMessage());
                     }
                 });
     }

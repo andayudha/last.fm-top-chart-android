@@ -2,6 +2,7 @@ package io.anda.lastfmchartsjava.api;
 
 import android.content.Context;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import io.anda.lastfmchartsjava.R;
@@ -12,6 +13,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+import rx.Single;
 
 /**
  * Created by anda on 7/15/2017.
@@ -20,16 +22,13 @@ import rx.Observable;
 public class RestApiManager {
 
     private static final long TIMEOUT = 10;
-    private static final String COUNTRY_NAME = "japan";
     private final String BASE_URL = "http://ws.audioscrobbler.com";
 
     private Context mContext;
     private Retrofit retrofit;
     private RestService restService;
 
-    private static RestApiManager instance = null;
-
-    private RestApiManager(Context context) {
+    public RestApiManager(Context context) {
         this.mContext = context;
         retrofit = new Retrofit.Builder()
                 .client(buildOkHttpsClient())
@@ -41,9 +40,23 @@ public class RestApiManager {
         restService = retrofit.create(RestService.class);
     }
 
-    public static RestApiManager createInstance(Context context) {
-        if(instance==null) instance = new RestApiManager(context);
-        return instance;
+    public void initRestService(){
+        retrofit = new Retrofit.Builder()
+                .client(buildOkHttpsClient())
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        restService = retrofit.create(RestService.class);
+    }
+
+    public void setRetrofit(Retrofit retrofit) {
+        this.retrofit = retrofit;
+    }
+
+    public void setRestService(RestService restService) {
+        this.restService = restService;
     }
 
     private static OkHttpClient buildOkHttpsClient() {
@@ -53,13 +66,13 @@ public class RestApiManager {
     }
 
 
-    public Observable<Response<TrackResponse>> getTopChartCountryResponseObservable(int page, int limit, String country){
-        return  restService.getTopChartCountryResponse(
+    public Single<Response<TrackResponse>> getTopChartCountryResponseSingle(int page, int limit, String country) {
+        return restService.getTopChartCountryResponse(
                 mContext.getString(R.string.api_key),
                 country,
                 String.valueOf(page),
-                String.valueOf(limit)
-        );
+                String.valueOf(limit));
+
     }
 
     public void onStop() {
